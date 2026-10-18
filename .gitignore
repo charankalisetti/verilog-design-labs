@@ -1,0 +1,13 @@
+# Generated simulator and FPGA build output
+*.bak
+*.bak1
+*.wlf
+*.cr.mti
+*.mpf
+*.qws
+transcript
+work/
+db/
+incremental_db/
+output_files/
+*.vvp
