@@ -55,5 +55,11 @@ initial
   reset();
   apply_Stimulus();
  end  
-  
+
+initial
+begin
+    #1000;
+    $finish;
+end
+
 endmodule
