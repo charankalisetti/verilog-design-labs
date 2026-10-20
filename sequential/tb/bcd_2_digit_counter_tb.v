@@ -20,10 +20,17 @@ task apply_reset;
 		@(negedge clk);
 		reset=0;
 	end	
-			
-initial begin
+endtask		
+	
+initial 
 clock_gen();
-initial begin
+
+initial
 apply_reset();
+
+initial begin
+#100;
+$finish;
+end
 
 endmodule
