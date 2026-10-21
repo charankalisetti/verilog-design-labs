@@ -1,4 +1,4 @@
-module mod_12_up_counter(in,load,reset,count);
+module mod_12_up_counter(in,load,reset,clk,count);
 
 input [3:0]in;
 input load,reset,clk;
@@ -8,9 +8,9 @@ always@(posedge clk)
  begin
   if(reset)
    count=0;
-   else if(load)
+   else if(load&&(in<=11))
     count=in;
-	 else if(count==12)
+	 else if(count==11)
 	  count=0;
 	   else
 	    count=count+1;
