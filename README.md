@@ -22,8 +22,17 @@ This repository contains **54 Verilog source files**: **31 RTL designs** and **2
 
 ```text
 combinational/
-  rtl/   Combinational design modules
-  tb/    Combinational simulation testbenches
+  arithmetic/
+    rtl/   Arithmetic designs
+    tb/    Arithmetic testbenches
+  selection-routing/
+    rtl/   Multiplexers, demultiplexer, and bidirectional buffer
+    tb/    Selection and routing testbenches
+  encoders-decoders/
+    rtl/   Encoders, priority encoders, and decoders
+    tb/    Encoder and decoder testbenches
+  other-logic/
+    rtl/   XOR gate and priority circuit
 sequential/
   counters/
     rtl/   Counter modules
@@ -41,7 +50,7 @@ sequential/
 Install [Icarus Verilog](https://steveicarus.github.io/iverilog/) and run commands from the repository root. This compiles and runs the full-adder testbench:
 
 ```sh
-iverilog -g2012 -o full_adder_tb.vvp combinational/rtl/full_adder_df.v combinational/tb/full_adder_df_tb.v
+iverilog -g2012 -o full_adder_tb.vvp combinational/arithmetic/rtl/full_adder_df.v combinational/arithmetic/tb/full_adder_df_tb.v
 vvp full_adder_tb.vvp
 ```
 
