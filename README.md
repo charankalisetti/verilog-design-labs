@@ -9,7 +9,7 @@ This repository contains **54 Verilog source files**: **31 RTL designs** and **2
 ### Combinational logic
 
 - **Arithmetic:** half adder, full adder, 4-bit ripple-carry adder, adder/subtractor, and 8-bit ALU.
-- **Selection and routing:** 2:1 and 4:1 multiplexers in alternate structural/dataflow implementations, 1:4 demultiplexer, and bidirectional buffer.
+- **Multiplexer and routing:** 2:1 and 4:1 multiplexers in alternate structural/dataflow implementations, 1:4 demultiplexer, and bidirectional buffer.
 - **Encoding and decoding:** 8:3 encoder; 2:4 and 3:8 decoders; 4:2 and 8:3 priority encoders, including a composed encoder.
 - **Other logic:** XOR gate and priority circuit.
 
@@ -25,9 +25,9 @@ combinational/
   arithmetic/
     rtl/   Arithmetic designs
     tb/    Arithmetic testbenches
-  selection-routing/
+  multiplexer/
     rtl/   Multiplexers, demultiplexer, and bidirectional buffer
-    tb/    Selection and routing testbenches
+    tb/    Multiplexer and routing testbenches
   encoders-decoders/
     rtl/   Encoders, priority encoders, and decoders
     tb/    Encoder and decoder testbenches
