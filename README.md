@@ -25,8 +25,15 @@ combinational/
   rtl/   Combinational design modules
   tb/    Combinational simulation testbenches
 sequential/
-  rtl/   Sequential design modules
-  tb/    Sequential simulation testbenches
+  counters/
+    rtl/   Counter modules
+    tb/    Counter simulation testbenches
+  flip-flops/
+    rtl/   Flip-flop modules
+    tb/    Flip-flop simulation testbenches
+  latches/
+    rtl/   Latch modules
+    tb/    Latch simulation testbenches
 ```
 
 ## Simulating an example
