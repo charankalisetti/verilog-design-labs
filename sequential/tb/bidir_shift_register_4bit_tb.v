@@ -3,13 +3,14 @@
 reg clk,reset,sr_in,sl_in;
 reg [1:0]mode;
 reg [3:0]D;
+wire so_left,so_right;
 
 bidir_shift_register_4bit DUT(clk,reset,mode,sr_in,sl_in,D,so_left,so_right);
 
 task clock_gen;
 	begin
 		clk=0;
-		forever clk=~clk;
+		forever #5 clk=~clk;
 	end
 endtask
 
@@ -48,7 +49,7 @@ task apply_stimulus;
 			begin
 				@(posedge clk)
 				mode=3;
-				D={$random}%16
+				D={$random}%16; 
 			end
 
 	end

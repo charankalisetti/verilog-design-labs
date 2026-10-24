@@ -14,9 +14,9 @@ and 11 = parallel load D.
 
 */
 
-module bidir_shift_reg_4bit(clk,reset,mode,sr_in,sl_in,D,so_left,so_right);
+module bidir_shift_register_4bit(clk,reset,mode,sr_in,sl_in,D,so_left,so_right);
 
-parameter hold=00,shift_right=01,shift_left=10,parallel_load=11;
+parameter hold=2'b00,shift_right=2'b01,shift_left=2'b10,parallel_load=2'b11;
 
 input clk,reset,sr_in,sl_in;
 input [1:0]mode;
@@ -32,20 +32,21 @@ always@(posedge clk)
 			else
 				begin
 					case(mode)
-					hold:shift_reg=shift_reg;
+					hold:shift_reg<=shift_reg;
 					shift_right:begin
 									shift_reg<={sr_in,shift_reg[3:1]};
 								end
 					shift_left:begin
 									shift_reg<={shift_reg[2:0],sl_in};
 							    end	
-					parallel_load:shift_reg=D;
+					parallel_load:shift_reg<=D;
+					endcase
 				end
 	end
 
 
 assign so_right=shift_reg[0];
-assign so_left<=shift_reg[3];
+assign so_left=shift_reg[3];
 
 
 endmodule	
