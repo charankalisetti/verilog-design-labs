@@ -33,12 +33,8 @@ always@(posedge clk)
 				begin
 					case(mode)
 					hold:shift_reg<=shift_reg;
-					shift_right:begin
-									shift_reg<={sr_in,shift_reg[3:1]};
-								end
-					shift_left:begin
-									shift_reg<={shift_reg[2:0],sl_in};
-							    end	
+					shift_right:shift_reg<={sr_in,shift_reg[3:1]};
+					shift_left:shift_reg<={shift_reg[2:0],sl_in};
 					parallel_load:shift_reg<=D;
 					endcase
 				end
