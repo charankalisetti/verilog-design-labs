@@ -4,7 +4,7 @@ A portfolio of Verilog HDL exercises covering combinational logic and sequential
 
 ## Project overview
 
-This repository contains **54 Verilog source files**: **31 RTL designs** and **23 testbenches**.
+This repository contains **66 Verilog source files**: **41 RTL designs** and **25 testbenches**.
 
 ### Combinational logic
 
@@ -16,7 +16,10 @@ This repository contains **54 Verilog source files**: **31 RTL designs** and **2
 ### Sequential logic
 
 - **Storage elements:** D flip-flop, gated D latch built from NAND gates, JK flip-flop, and gated SR latch.
-- **Counters:** synchronous up counter, synchronous up/down counter, loadable 4-bit synchronous up/down counter, modulo-9 binary up/down counter, modulo-12 up counter, two-digit BCD counter, and modulo-14 counter that cycles from 3 to 16 with an active-low asynchronous reset.
+- **Counters:** synchronous up counter, synchronous up/down counter, loadable 4-bit synchronous up/down counter, modulo-9 binary up/down counter, modulo-12 up counter, two-digit BCD counter, modulo-14 counter that cycles from 3 to 16 with an active-low asynchronous reset, modulo-10 down counter, and dual-mode 6-bit ring/Johnson counter.
+- **Shift registers:** 4-bit bidirectional register, parameterized N-bit serial-in/parallel-out register, and 4-bit serial-in/serial-out register.
+- **Memories and FIFO:** asynchronous single-port RAM, synchronous dual-port RAM, and synchronous FIFO.
+- **State machines:** Moore FSM that checks whether an MSB-first binary stream is divisible by 3.
 
 ## Repository layout
 
@@ -43,6 +46,13 @@ sequential/
   latches/
     rtl/   Latch modules
     tb/    Latch simulation testbenches
+  memories-fifos/
+    rtl/   RAM and FIFO modules
+  shift-registers/
+    rtl/   Shift-register modules
+    tb/    Shift-register simulation testbenches
+  state-machines/
+    rtl/   State-machine modules
 ```
 
 ## Simulating an example
