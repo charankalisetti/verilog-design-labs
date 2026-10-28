@@ -132,4 +132,64 @@ Is WR[3:0] == RD[3:0]?     YES (3 == 3) -> Same Slot
 Result: FULL = 1
 
 
+
+
+===================================================================================================================================
+                                              SYNCHRONOUS FIFO TOP-LEVEL BLOCK DIAGRAM
+===================================================================================================================================
+
+                                                +-----------------------------+
+                                                |                             |
+                               clk ------------>|                             |
+                             rst_n ------------>|                             |
+                             wr_en ------------>|                             |-----> full
+                             rd_en ------------>|       SYNCHRONOUS FIFO      |-----> empty
+                                                |                             |
+                      din [N-1:0] ------------->|                             |-----> dout [N-1:0]
+                                                |                             |
+                                                +-----------------------------+
+												
+												
+												
+												
+												
+												
+===================================================================================================================================
+                                              LATCH-PREVENTION & SYNTHESIS ANALYSIS
+===================================================================================================================================
+The provided code is guaranteed to be latch-free because all registers (wr_ptr, rd_ptr, and dout) are declared using sequential
+always @(posedge clk) blocks with an active-low reset. In hardware description languages (HDLs) like Verilog, code generation
+rules for sequential blocks and combinational blocks dictate exactly why latches are prevented here:
+
+1. Sequential Logic Always Infers Flip-Flops, Not Latches
+-----------------------------------------------------------------------------------------------------------------------------------
+   Unwanted latches are almost always a result of incomplete conditional statements (like an if without an else, or a case 
+   missing a default) inside a combinational block (always @*).
+   Because the code uses sequential blocks (always @(posedge clk)):
+   - Any omitted condition (e.g., when wr_en is low) tells the synthesis tool to hold the current value until the next clock edge.
+   - In hardware, holding a value across a clock edge is precisely what a D Flip-Flop (DFF) does.
+   - The tool will simply synthesize a multiplexer feeding back into a flip-flop, ensuring no latches are formed.
+
+2. The Memory Array Inference
+-----------------------------------------------------------------------------------------------------------------------------------
+   The RAM memory array (mem) is written into sequentially:
+       if (wr_en && !full) begin
+           mem[wr_ptr[4:0]] <= din;
+       end
+   When wr_en is false or the FIFO is full, the memory simply retains its previous state. In FPGA or ASIC synthesis, this 
+   maps perfectly to Look-Up Table (LUT) RAM or Block RAM (BRAM) structures, which are fully synchronous and inherently 
+   free of latches.
+
+3. Continuous Assignments are Stateless
+-----------------------------------------------------------------------------------------------------------------------------------
+   The full and empty flags use assign statements:
+       assign empty = (wr_ptr == rd_ptr);
+       assign full  = (wr_ptr[4:0] == rd_ptr[4:0]) && (wr_ptr != rd_ptr);
+   These are purely combinational equations. They evaluate instantaneously based on the current values of wr_ptr and rd_ptr. 
+   Because there is no conditional branching (if/else) or state memory in a continuous assignment, it is mathematically 
+   impossible for them to create a latch.
+===================================================================================================================================
+
+												
+
 */
