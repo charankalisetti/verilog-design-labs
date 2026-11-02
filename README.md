@@ -4,30 +4,36 @@ A portfolio of Verilog HDL exercises covering combinational logic and sequential
 
 ## Project overview
 
-This repository contains **66 Verilog source files**: **41 RTL designs** and **25 testbenches**.
+This repository contains **71 Verilog source files**: **46 RTL designs** and **25 testbenches**.
 
 ### Combinational logic
 
 - **Arithmetic:** half adder, full adder, 4-bit ripple-carry adder, adder/subtractor, and 8-bit ALU.
 - **Multiplexer and routing:** 2:1 and 4:1 multiplexers in alternate structural/dataflow implementations, 1:4 demultiplexer, and bidirectional buffer.
-- **Encoding and decoding:** 8:3 encoder; 2:4 and 3:8 decoders; 4:2 and 8:3 priority encoders, including a composed encoder.
+- **Encoding and decoding:** 8:3 encoder; 2:4 and 3:8 decoders, including a shift-based implementation; 4:2 and 8:3 priority encoders, including a composed encoder.
+- **Comparators:** 2-bit magnitude comparator.
 - **Other logic:** XOR gate and priority circuit.
 
 ### Sequential logic
 
 - **Storage elements:** D flip-flop, gated D latch built from NAND gates, JK flip-flop, and gated SR latch.
-- **Counters:** synchronous up counter, synchronous up/down counter, loadable 4-bit synchronous up/down counter, modulo-9 binary up/down counter, modulo-12 up counter, two-digit BCD counter, modulo-14 counter that cycles from 3 to 16 with an active-low asynchronous reset, modulo-10 down counter, and dual-mode 6-bit ring/Johnson counter.
-- **Shift registers:** 4-bit bidirectional register, parameterized N-bit serial-in/parallel-out register, and 4-bit serial-in/serial-out register.
+- **Counters:** synchronous up counter, synchronous up/down counter, loadable 4-bit synchronous up/down counter, modulo-9 binary up/down counter, modulo-12 up counter, two-digit BCD counter, modulo-14 counter that cycles from 3 to 16 with an active-low asynchronous reset, modulo-10 down counter, dual-mode 6-bit ring/Johnson counter, and 4-bit Johnson counters including a self-correcting version.
+- **Shift registers:** 4-bit bidirectional register, parameterized N-bit serial-in/parallel-out register, 4-bit serial-in/serial-out register, and parameterized universal shift register.
 - **Memories and FIFO:** asynchronous single-port RAM, synchronous dual-port RAM, and synchronous FIFO.
 - **State machines:** Moore FSM that checks whether an MSB-first binary stream is divisible by 3.
 
 ## Repository layout
 
 ```text
+docs/
+  verilog-guides/
+    *.txt  Verilog syntax and timescale references
 combinational/
   arithmetic/
     rtl/   Arithmetic designs
     tb/    Arithmetic testbenches
+  comparators/
+    rtl/   Magnitude comparator designs
   multiplexer/
     rtl/   Multiplexers, demultiplexer, and bidirectional buffer
     tb/    Multiplexer and routing testbenches

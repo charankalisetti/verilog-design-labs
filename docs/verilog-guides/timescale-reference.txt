@@ -1,0 +1,121 @@
+
+===================================================================================================================================
+                       COMPLETE VERILOG `timescale` MASTER GUIDE: CONCEPTS, RULES & PRACTICE PROBLEMS
+===================================================================================================================================
+
+1. WHAT IS `timescale`? (CONCEPT & ANALOGY)
+-----------------------------------------------------------------------------------------------------------------------------------
+Think of `timescale as setting the rules for a stopwatch when running a simulation in Verilog.
+When you write `#5` in code, the simulator does not automatically know if you mean 5 seconds, 5 minutes, or 5 nanoseconds.
+`timescale defines two essential parameters:
+
+  1. Time Unit      : How long 1 simulation tick (#1) lasts.
+  2. Time Precision : The smallest sub-tick time interval before rounding occurs.
+
+- Syntax Anatomy:
+  `timescale <time_unit> / <time_precision>
+  Example: `timescale 1ns / 1ps
+           - 1ns  = Time Unit (what #1 actually stands for)
+           - 1ps  = Time Precision (smallest tick your stopwatch can display)
+
+- Everyday Baking Analogy:
+  * Time Unit (1 Minute)    : Recipe says "bake for #10" -> Bakes for 10 minutes.
+  * Time Precision (1 Sec)  : Timer measures down to seconds. Setting timer to 10 min 0.4 sec rounds to 10 min 0 sec.
+
+
+2. THE 3 GOLDEN RULES OF `timescale
+-----------------------------------------------------------------------------------------------------------------------------------
+  Rule 1 (Allowed Multipliers) : Only 1, 10, or 100 can precede the time unit (e.g., 1ns, 10ns, 100ns). `5ns` is ILLEGAL.
+  Rule 2 (Allowed Time Units)  : s (seconds), ms (milliseconds), us (microseconds), ns (nanoseconds), 
+                                 ps (picoseconds), fs (femtoseconds).
+  Rule 3 (Precision Constraint): Precision MUST be less than or equal to Unit. `timescale 1ps / 1ns is ILLEGAL.
+
+
+3. VERILOG PRECISION ROUNDING EXAMPLE
+-----------------------------------------------------------------------------------------------------------------------------------
+`timescale 1ns / 1ps   // Unit = 1 ns, Precision = 1 ps (0.001 ns = 3 decimal places)
+
+module tb_example;
+    reg clk;
+    initial begin
+        clk = 0;
+        #5.1238 clk = 1; 
+        // 1. #5.1238 = 5.1238 nanoseconds.
+        // 2. Precision = 1ps (0.001ns), rounding to 3 decimal places.
+        // 3. clk toggles HIGH at exactly 5.124 ns.
+    end
+endmodule
+
+
+4. WHY WE CONVERT TO SECONDS (EXPLANATION OF 10^-9)
+-----------------------------------------------------------------------------------------------------------------------------------
+- Meaning of Nano (n):
+  * In SI metric system, nano (n) means one-billionth (10^-9).
+  * 1 nanosecond (ns) = 1 / 1,000,000,000 second = 10^-9 seconds (s).
+
+- Why Conversion is Mandatory for Frequency:
+  * The unit of frequency is Hertz (Hz), defined strictly as cycles per second (s^-1):
+    1 Hz = 1 / (1 second)
+  * To apply the frequency formula f = 1 / T, period T MUST be expressed in standard seconds (s), not nanoseconds (ns).
+
+- Standard Frequency Unit (Hertz):
+  * Frequency is measured in Hertz (Hz = cycles per second).
+  * Formula: f = 1 / T
+  * Period (T) MUST be converted into standard seconds (s) before calculating frequency in Hz.
+
+- Unit Multipliers Reference:
+  * Micro (us) : 10^-6 s
+  * Nano  (ns) : 10^-9 s  (1 ns = 0.000000001 s)
+  * Pico  (ps) : 10^-12 s
+
+
+5. SOLVED PRACTICE QUESTIONS
+-----------------------------------------------------------------------------------------------------------------------------------
+[QUESTION 1]
+Assume `timescale 1ns/100ps. Find the period and frequency of the clock. [2 marks]
+Code:
+   initial begin
+       clk = 1'b0;
+       forever #10 clk = ~clk;
+   end
+
+Solution:
+   - Time Unit = 1 ns
+   - Half-Period (t_half) = 10 units = 10 * 1 ns = 10 ns
+   - Clock Period (T) = 2 * t_half = 2 * 10 ns = 20 ns
+   - Frequency (f) = 1 / T = 1 / (20 * 10^-9 s) = 50,000,000 Hz = 50 MHz
+   Answers: Clock Period (T) = 20 ns | Clock Frequency (f) = 50 MHz
+
+-----------------------------------------------------------------------------------------------------------------------------------
+[QUESTION 2]
+Assume `timescale 1ns/1ps. Find the clock period and frequency. [2 marks]
+Code:
+   initial begin
+       clk = 1'b0;
+       forever #7.5 clk = ~clk;
+   end
+
+Solution:
+   - Time Unit = 1 ns
+   - Half-Period (t_half) = 7.5 units = 7.5 * 1 ns = 7.5 ns
+   - Clock Period (T) = 2 * t_half = 2 * 7.5 ns = 15 ns
+   - Frequency (f) = 1 / T = 1 / (15 * 10^-9 s) = 66,666,666.67 Hz ≈ 66.67 MHz
+   Answers: Clock Period (T) = 15 ns | Clock Frequency (f) = 66.67 MHz
+
+-----------------------------------------------------------------------------------------------------------------------------------
+[QUESTION 3]
+Assume `timescale 1ns/1ps. Find the clock period and frequency. [2 marks]
+Code:
+   initial begin
+       clk = 1'b0;
+       forever #5 clk = ~clk;
+   end
+
+Solution:
+   - Time Unit = 1 ns
+   - Half-Period (t_half) = 5 units = 5 * 1 ns = 5 ns
+   - Clock Period (T) = 2 * t_half = 2 * 5 ns = 10 ns
+   - Frequency (f) = 1 / T = 1 / (10 * 10^-9 s) = 100,000,000 Hz = 100 MHz
+   Answers: Clock Period (T) = 10 ns | Clock Frequency (f) = 100 MHz
+
+===================================================================================================================================

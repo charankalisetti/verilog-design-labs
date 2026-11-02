@@ -1,0 +1,196 @@
+
+===================================================================================================================
+                  VERILOG `case`, `casez`, AND `casex` COMPREHENSIVE MASTER GUIDE
+===================================================================================================================
+
+TABLE OF CONTENTS:
+1. Executive Definitions & High-Level Comparison
+2. Fundamental Matching Rules & Nuances (Pattern vs. Input)
+3. Bit-Level Truth Table Matrix
+4. The Simulation Pitfall: Why `casex` is Dangerous in RTL
+5. Synthesizable RTL Example: Priority Encoder using `casez`
+6. Standard Exam / Interview Answer Template
+
+===================================================================================================================
+1. EXECUTIVE DEFINITIONS & HIGH-LEVEL COMPARISON
+===================================================================================================================
+
+- `case`  : Performs strict bit-for-bit comparison. 
+            Inputs must match literal '0', '1', 'X', or 'Z' values exactly.
+            
+- `casez` : Treats high-impedance states ('Z' and '?') as don't-care wildcards.
+            Evaluates unknown 'X' states STRICTLY (not a wildcard).
+            RECOMMENDED for synthesizable RTL (priority encoders, address decoders).
+
+- `casex` : Treats BOTH high-impedance ('Z'/'?') AND unknown ('X') states as don't-care wildcards.
+            DISCOURAGED in RTL design because it masks uninitialized signal bugs during simulation.
+
+Note: In Verilog, the character '?' is a direct syntax alias for 'Z'.
+
+
+===================================================================================================================
+2. FUNDAMENTAL MATCHING RULES & NUANCES (PATTERN vs. INPUT)
+===================================================================================================================
+
+The behavior depends on whether the wildcard symbol ('?') is in the CASE PATTERN or the INPUT SIGNAL:
+
+A. WHEN '?' IS IN THE CASE PATTERN (e.g., Pattern = 2'b?1, Input = 2'bX1)
+   - The pattern explicitly tells the simulator: "Ignore the MSB position completely."
+   - Both `casez` and `casex` ignore bit 1 and check bit 0 (1 == 1).
+   - Result: BOTH `casez` and `casex` return a MATCH.
+
+B. WHEN A LITERAL '0' OR '1' IS IN THE PATTERN (e.g., Pattern = 2'b01, Input = 2'bX1)
+   - The pattern explicitly expects a '0' at the MSB position.
+   - `casez`: Treats 'X' strictly. Since 'X' != '0', the match FAILS and falls through to `default`.
+             (This alerts you in simulation that your signal was uninitialized!)
+   - `casex`: Treats 'X' in the input as a wildcard match for '0'. The match SUCCEEDS silently.
+             (This masks the hardware bug in simulation!)
+
+
+===================================================================================================================
+3. BIT-LEVEL TRUTH TABLE MATRIX
+===================================================================================================================
+
++--------------+-----------+---------------+----------------+----------------+
+| Pattern Bit  | Input Bit | `case` Match? | `casez` Match? | `casex` Match? |
++--------------+-----------+---------------+----------------+----------------+
+|      0       |     0     |      YES      |      YES       |      YES       |
+|      0       |     1     |      NO       |       NO       |       NO       |
+|      0       |     Z     |      NO       |      YES*      |      YES*      |
+|      0       |     X     |      NO       |  NO (Strict X) | YES (X=Wildcard|
++--------------+-----------+---------------+----------------+----------------+
+|   ? (or Z)   |     0     |      NO       |      YES*      |      YES*      |
+|   ? (or Z)   |     1     |      NO       |      YES*      |      YES*      |
+|   ? (or Z)   |     X     |      NO       |      YES*      |      YES*      |
+|   ? (or Z)   |     Z     |      YES      |      YES*      |      YES*      |
++--------------+-----------+---------------+----------------+----------------+
+* Indicates that the 'Z' / '?' acts as an active don't-care wildcard match.
+
+
+===================================================================================================================
+4. THE SIMULATION PITFALL: WHY `CASEX` IS DANGEROUS IN RTL
+===================================================================================================================
+
+Scenario: Consider a circuit where an uninitialized wire drives `sel = 2'bX1` (MSB is unknown 'X').
+
+--------------------------------------------------------------------------------------------------
+Code Block A: Using `casez`
+--------------------------------------------------------------------------------------------------
+    reg [1:0] sel = 2'bX1;
+    always @(*) begin
+        casez (sel)
+            2'b01:   out = 2'b01; // FAILS: MSB 'X' != '0'
+            2'b11:   out = 2'b10; // FAILS: MSB 'X' != '1'
+            default: out = 2'b00; // MATCHED! Signals an uninitialized signal error.
+        endcase
+    end
+
+--------------------------------------------------------------------------------------------------
+Code Block B: Using `casex`
+--------------------------------------------------------------------------------------------------
+    reg [1:0] sel = 2'bX1;
+    always @(*) begin
+        casex (sel)
+            2'b01:   out = 2'b01; // MATCHED SILENTLY! 'casex' forces input 'X' to match '0'.
+            2'b11:   out = 2'b10;
+            default: out = 2'b00;
+        endcase
+    end
+
+Key Takeaway: `casex` hides hardware bugs in RTL simulation. Always use `casez` with '?' patterns.
+
+
+===================================================================================================================
+5. SYNTHESIZABLE RTL EXAMPLE: PRIORITY ENCODER USING `casez`
+===================================================================================================================
+
+module priority_encoder_4to2 (
+    input  wire [3:0] req,   // Request vector: req[3] highest priority, req[0] lowest
+    output reg  [1:0] grant, // Encoded priority output
+    output reg        valid  // Active high if at least 1 request exists
+);
+
+    always @(*) begin
+        valid = 1'b1;
+        casez (req)
+            4'b1???: grant = 2'b11; // Matches 1000, 1001, 1010, 1111, etc.
+            4'b01??: grant = 2'b10; // Matches 0100, 0101, 0110, 0111, etc.
+            4'b001?: grant = 2'b01; // Matches 0010, 0011
+            4'b0001: grant = 2'b00; // Matches 0001
+            default: begin
+                grant = 2'b00;
+                valid = 1'b0;       // Matches 0000 or invalid state
+            end
+        endcase
+    end
+
+endmodule
+
+
+===================================================================================================================
+6. STANDARD EXAM / INTERVIEW ANSWER TEMPLATE
+===================================================================================================================
+
+Question: "State the difference between `casez` and `casex` when matching X/Z values."
+
+Answer:
+1. `casez` treats only high-impedance logic states ('Z' and '?') as don't-care wildcards during pattern matching.
+   It evaluates unknown 'X' states strictly as unknown logic.
+2. `casex` treats BOTH high-impedance ('Z'/'?') AND unknown ('X') logic states as don't-care wildcards.
+3. Design Significance: `casez` is preferred in RTL synthesis. `casex` is discouraged because it can mask
+   uninitialized 'X' signal bugs in simulation, causing simulation-vs-synthesis mismatches on real hardware.
+
+===================================================================================================================
+// ============================================================================
+// `casez` BEHAVIOR DEMO ACROSS ALL 4 INPUT/PATTERN SCENARIOS
+// ============================================================================
+
+module casez_scenarios_demo;
+
+    reg [1:0] sel;
+    reg [1:0] out1, out2, out3, out4;
+
+    always @(*) begin
+
+        // --------------------------------------------------------------------
+        // 1. 'Z' IS IN THE INPUT (sel = 2'bz1)
+        // --------------------------------------------------------------------
+        sel = 2'bz1;
+        casez (sel)
+            2'b01:   out1 = 2'b11; // MATCH! 'z' in input acts as a wildcard ('z' matches '0')
+            default: out1 = 2'b00;
+        endcase
+
+
+        // --------------------------------------------------------------------
+        // 2. 'Z' / '?' IS IN THE PATTERN (pattern = 2'b?1)
+        // --------------------------------------------------------------------
+        sel = 2'b01;
+        casez (sel)
+            2'b?1:   out2 = 2'b11; // MATCH! '?' in pattern acts as a wildcard (ignores bit 1)
+            default: out2 = 2'b00;
+        endcase
+
+
+        // --------------------------------------------------------------------
+        // 3. 'X' IS IN THE INPUT (sel = 2'bx1)
+        // --------------------------------------------------------------------
+        sel = 2'bx1;
+        casez (sel)
+            2'b01:   out3 = 2'b11; // NO MATCH! 'x' in input is evaluated strictly ('x' != '0')
+            default: out3 = 2'b00; // Executes default (out3 = 2'b00)
+        endcase
+
+
+        // --------------------------------------------------------------------
+        // 4. 'X' IS IN THE PATTERN (pattern = 2'bx1)
+        // --------------------------------------------------------------------
+        sel = 2'b01;
+        casez (sel)
+            2'bx1:   out4 = 2'b11; // NO MATCH! 'x' in pattern is NOT a wildcard in casez
+            default: out4 = 2'b00; // Executes default (requires literal 'x' in input)
+        endcase
+
+    end
+
+endmodule
