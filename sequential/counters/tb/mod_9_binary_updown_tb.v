@@ -33,13 +33,13 @@ endtask
 
 task apply_Stimulus;
  begin
-  repeat(20)
+  repeat(15)
    begin
    @(negedge clk);
    dir=1;
   end
 
- repeat(20)
+ repeat(10)
   begin
   @(negedge clk);
   dir=0;
