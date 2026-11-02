@@ -1,4 +1,4 @@
-module dff_tb;
+module d_ff_tb;
 
 reg d,clk,reset;
 wire q;
