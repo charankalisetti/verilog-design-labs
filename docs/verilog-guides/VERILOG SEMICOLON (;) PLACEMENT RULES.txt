@@ -18,4 +18,18 @@
    - Process & Loop Headers        : always @(...), initial, if (...), else, case (...), repeat (...)
    - Compiler Directives           : `timescale, `define, `include, `ifdef
 ===================================================================================================================
+
+
+
+Non-ANSI Style (Legacy Verilog-1995)
+Ports are declared on separate lines inside the task body before the begin...end block.
+
+task task_name;
+    input  [7:0] data_in;
+    output [7:0] data_out;
+    inout        bus;
+    begin
+        data_out = data_in;
+    end
+endtask // NO semicolon after endtask
 */
