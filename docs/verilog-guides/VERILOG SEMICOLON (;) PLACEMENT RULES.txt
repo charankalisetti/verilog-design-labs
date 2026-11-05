@@ -1,0 +1,21 @@
+/*
+===================================================================================================================
+                                 VERILOG SEMICOLON (;) PLACEMENT RULES
+===================================================================================================================
+
+1. WHERE YOU MUST USE A SEMICOLON (;):
+   - Module Header Declaration     : module mod_name (ports...);
+   - Task & Function Declarations  : task task_name;  /  function [7:0] func_name;
+   - Internal Declarations         : wire [3:0] w;  /  reg r;  /  parameter N = 8;
+   - All Assignments               : assign y = a;  /  q <= d;  /  count = count + 1;
+   - Standalone Timing Controls    : #10;  /  @(posedge clk);  /  wait (ready);
+   - Sub-module Instantiations     : my_gate u1 (.a(x), .y(y));
+   - System Calls                  : $display();  /  $finish;
+
+2. WHERE YOU MUST NEVER USE A SEMICOLON (;):
+   - Closing Keywords              : endmodule, endtask, endfunction, endcase, end, join
+   - Block Initiators              : begin, fork
+   - Process & Loop Headers        : always @(...), initial, if (...), else, case (...), repeat (...)
+   - Compiler Directives           : `timescale, `define, `include, `ifdef
+===================================================================================================================
+*/
